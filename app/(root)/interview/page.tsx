@@ -1,13 +1,14 @@
-import React from 'react'
+import React from "react";
 import Agent from "@/components/Agent";
 
 const Page = () => {
     return (
         <>
-            <h3>Interview Generation</h3>
+            <h3>Start Interview</h3>
 
-            <Agent userName="You" userId="user1" type="generate" />
+            <Agent userName="You" mode="interview" />
         </>
-    )
-}
-export default Page
+    );
+};
+
+export default Page;
