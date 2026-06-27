@@ -366,4 +366,4 @@ This project is licensed under the **MIT License** — feel free to update this 
 
 ---
 
-<p align="center">Built with ❤️ to help job seekers ace their interviews</p>
+<p align="center">Built to help job seekers ace their interviews</p>
