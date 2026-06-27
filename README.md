@@ -354,15 +354,14 @@ The app will be available at `http://localhost:3000`.
 
 ## Screenshots
 
-_Screenshots will be added once available. Place images in a `/screenshots` directory and reference them as below._
-
-| Page | Reference |
+| Page | Preview |
 |---|---|
-| Landing Page | `![Landing Page](./screenshots/landing.png)` |
+| Sign In | `![Sign In](./screenshots/auth.png)` |
 | Dashboard | `![Dashboard](./screenshots/dashboard.png)` |
 | Interview Setup | `![Interview Setup](./screenshots/setup.png)` |
 | Live Voice Interview | `![Voice Interview](./screenshots/interview.png)` |
-| Feedback / Results | `![Feedback](./screenshots/feedback.png)` |
+| Feedback — Score & Breakdown | `![Feedback](./screenshots/feedback.png)` |
+| Feedback — Strengths & Improvements | `![Feedback Continued](./screenshots/feedback-2.png)` |
 
 ---
 
