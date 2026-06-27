@@ -19,17 +19,39 @@ export async function POST(req: Request) {
         const prompt = `
 You are an expert technical interviewer.
 
-Generate ${questionCount} HIGH QUALITY interview questions.
+Generate EXACTLY ${questionCount} interview questions.
 
 Role: ${role}
 Level: ${level}
 Tech Stack: ${techstack}
 
-Rules:
-- Questions must be realistic and industry-level
-- Mix conceptual + practical + scenario-based
-- Do NOT include explanations
+STRICT RULES:
+
+1. Difficulty Control:
+- If level is "Beginner":
+  - ONLY basic and easy questions
+  - Focus on fundamentals, definitions, simple queries
+  - NO advanced SQL joins, NO complex ML, NO system design
+
+- If level is "Intermediate":
+  - Moderate difficulty
+  - Some real-world scenarios
+  - Medium complexity logic
+
+- If level is "Advanced":
+  - Challenging questions
+  - Complex SQL, ML concepts, system design, optimization
+
+2. Question Rules:
+- Keep questions short and clear
+- Mix conceptual + practical
+- NO explanations
+- NO answers
+- NO extra text
+
+3. Output Format:
 - Return ONLY a JSON array
+- Must contain EXACTLY ${questionCount} questions
 
 Example:
 ["Question 1", "Question 2"]

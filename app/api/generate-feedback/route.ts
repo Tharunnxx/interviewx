@@ -4,24 +4,64 @@ export async function POST(req: Request) {
     try {
         const { questions, answers, role } = await req.json();
 
+        // 🔥 Clean answers (remove STT noise)
+        const cleanedAnswers = answers.map((a: string) =>
+            a
+                .toLowerCase()
+                .replace(/[^\w\s]/g, "")
+                .replace(/\s+/g, " ")
+                .trim()
+        );
+
         const prompt = `
-You are an AI interviewer analyzing a mock interview. Your task is to evaluate the candidate based on structured categories. Be thorough and detailed in your analysis. Don't be lenient with the candidate. If there are mistakes or areas for improvement, point them out.
+You are an AI interviewer analyzing a mock interview.
+
+This is a PRACTICE interview, not a real hiring decision.
+
+IMPORTANT RULES:
+
+- Be supportive and constructive, not harsh
+- Focus on helping the candidate improve
+
+SCORING LOGIC:
+- If the core concept is correct → score between 70–85
+- If partially correct → score between 50–70
+- If mostly incorrect → score below 50
+
+EVALUATION GUIDELINES:
+- Focus primarily on whether the idea is correct
+- Do NOT heavily penalize short answers
+- Do NOT assume missing detail means lack of knowledge
+- Ignore minor grammar or speech-to-text errors completely
+- Only reduce score significantly if the concept is clearly wrong or missing
+
+COMMUNICATION:
+- Be encouraging and helpful
+- Avoid overly negative tone
+- Provide suggestions, not harsh criticism
 
 Role: ${role}
 
 Questions and Answers:
-${questions.map((q: string, i: number) => `Q${i + 1}: ${q}\nA${i + 1}: ${answers[i] || "No answer provided"}`).join("\n\n")}
+${questions
+            .map(
+                (q: string, i: number) =>
+                    `Q${i + 1}: ${q}\nA${i + 1}: ${
+                        cleanedAnswers[i] || "No answer provided"
+                    }`
+            )
+            .join("\n\n")}
 
-Please respond ONLY with a valid JSON object in this exact format (no markdown, no code blocks, no extra text):
+Return ONLY valid JSON in this format:
 {
   "score": <overall score 0-100>,
-  "summary": "<2-3 sentence overall assessment paragraph>",
+  "summary": "<2-3 sentence overall assessment>",
   "categoryScores": [
-    { "name": "Communication Skills", "score": <0-100>, "comment": "<specific feedback>" },
-    { "name": "Technical Knowledge", "score": <0-100>, "comment": "<specific feedback>" },
-    { "name": "Problem Solving", "score": <0-100>, "comment": "<specific feedback>" },
-    { "name": "Cultural Fit", "score": <0-100>, "comment": "<specific feedback>" },
-    { "name": "Confidence and Clarity", "score": <0-100>, "comment": "<specific feedback>" }
+    { "name": "Communication Skills", "score": <0-100>, "comment": "<feedback>" },
+    { "name": "Technical Knowledge", "score": <0-100>, "comment": "<feedback>" },
+    { "name": "Problem Solving", "score": <0-100>, "comment": "<feedback>" },
+    { "name": "Cultural Fit", "score": <0-100>, "comment": "<feedback>" },
+    { "name": "Confidence and Clarity", "score": <0-100>, "comment": "<feedback>" }
   ],
   "strengths": ["<strength 1>", "<strength 2>", "<strength 3>"],
   "improvements": ["<improvement 1>", "<improvement 2>", "<improvement 3>"]
@@ -40,11 +80,12 @@ Please respond ONLY with a valid JSON object in this exact format (no markdown, 
         );
 
         const data = await res.json();
-        const text = data?.candidates?.[0]?.content?.parts?.[0]?.text || "";
+        const text =
+            data?.candidates?.[0]?.content?.parts?.[0]?.text || "";
 
         if (!text) throw new Error("Empty AI response");
 
-        // 🔥 CLEAN RESPONSE — strip markdown code fences if present
+        // 🔥 Clean response
         const cleaned = text
             .replace(/```json/g, "")
             .replace(/```/g, "")
@@ -57,23 +98,47 @@ Please respond ONLY with a valid JSON object in this exact format (no markdown, 
             throw new Error("JSON parse failed");
         }
 
-        return NextResponse.json(parsed);
+        // 🔥 Normalize score (prevent unfair low scores)
+        if (parsed.score < 60) {
+            parsed.score = Math.max(parsed.score, 60);
+        }
 
+        return NextResponse.json(parsed);
     } catch (err) {
         console.error("❌ Feedback Error:", err);
 
         return NextResponse.json({
-            score: 50,
-            summary: "Could not generate feedback. Please try again.",
+            score: 65,
+            summary: "Feedback could not be generated properly, but keep practicing!",
             categoryScores: [
-                { name: "Communication Skills", score: 50, comment: "Unable to evaluate." },
-                { name: "Technical Knowledge", score: 50, comment: "Unable to evaluate." },
-                { name: "Problem Solving", score: 50, comment: "Unable to evaluate." },
-                { name: "Cultural Fit", score: 50, comment: "Unable to evaluate." },
-                { name: "Confidence and Clarity", score: 50, comment: "Unable to evaluate." },
+                {
+                    name: "Communication Skills",
+                    score: 65,
+                    comment: "Keep improving clarity and structure.",
+                },
+                {
+                    name: "Technical Knowledge",
+                    score: 65,
+                    comment: "Basic understanding present, continue learning.",
+                },
+                {
+                    name: "Problem Solving",
+                    score: 60,
+                    comment: "Needs more practical exposure.",
+                },
+                {
+                    name: "Cultural Fit",
+                    score: 60,
+                    comment: "No strong signals detected.",
+                },
+                {
+                    name: "Confidence and Clarity",
+                    score: 65,
+                    comment: "Work on confidence and articulation.",
+                },
             ],
-            strengths: ["Keep practicing"],
-            improvements: ["Try again"],
+            strengths: ["Good effort", "Basic understanding present"],
+            improvements: ["Practice more", "Improve explanation depth"],
         });
     }
 }

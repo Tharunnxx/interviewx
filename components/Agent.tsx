@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import Image from "next/image";
-import { db } from "@/firebase/client";
+import { db, auth } from "@/firebase/client";
 import {
     doc,
     getDoc,
@@ -169,7 +169,38 @@ const Agent = ({
             }
 
             const [role, level, techstackRaw, count] = answers;
-            const questionCount = Number(count) || 5;
+            const wordToNumber: Record<string, number> = {
+                one: 1,
+                two: 2,
+                three: 3,
+                four: 4,
+                five: 5,
+                six: 6,
+                seven: 7,
+                eight: 8,
+                nine: 9,
+                ten: 10,
+            };
+
+// Try to extract number from text (like "4 questions")
+            const numberMatch = count.match(/\d+/);
+
+            let questionCount = numberMatch ? Number(numberMatch[0]) : NaN;
+
+            if (isNaN(questionCount)) {
+                const cleaned = count.toLowerCase();
+                for (const word in wordToNumber) {
+                    if (cleaned.includes(word)) {
+                        questionCount = wordToNumber[word];
+                        break;
+                    }
+                }
+            }
+
+// fallback
+            if (!questionCount || questionCount <= 0) {
+                questionCount = 5;
+            }
 
             // 🔥 API CALL
             const res = await fetch("/api/generate-questions", {
@@ -194,8 +225,18 @@ const Agent = ({
                 return;
             }
 
-            // ✅ SAVE TO FIREBASE
+            // ✅ SAVE TO FIREBASE (FIXED)
+
+            const user = auth.currentUser;
+
+            if (!user) {
+                console.log("No user logged in");
+                await speak("User not authenticated. Please login again.");
+                return;
+            }
+
             await addDoc(collection(db, "interviews"), {
+                userId: user.uid, // ✅ IMPORTANT
                 role,
                 level,
                 techstack: techstackRaw.split(",").map((t) => t.trim()),
@@ -274,7 +315,7 @@ const Agent = ({
                 <div className="card-border">
                     <div className="card-content">
                         <Image
-                            src="/user-avatar.png"
+                            src="/default-avatar.png"
                             alt="user"
                             width={120}
                             height={120}
