@@ -4,7 +4,6 @@ export async function POST(req: Request) {
     try {
         const { questions, answers, role } = await req.json();
 
-        // 🔥 Clean answers (remove STT noise)
         const cleanedAnswers = answers.map((a: string) =>
             a
                 .toLowerCase()
@@ -85,7 +84,6 @@ Return ONLY valid JSON in this format:
 
         if (!text) throw new Error("Empty AI response");
 
-        // 🔥 Clean response
         const cleaned = text
             .replace(/```json/g, "")
             .replace(/```/g, "")
@@ -98,7 +96,6 @@ Return ONLY valid JSON in this format:
             throw new Error("JSON parse failed");
         }
 
-        // 🔥 Normalize score (prevent unfair low scores)
         if (parsed.score < 60) {
             parsed.score = Math.max(parsed.score, 60);
         }

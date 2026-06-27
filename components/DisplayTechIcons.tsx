@@ -12,17 +12,16 @@ const DisplayTechIcons = ({ techStack }: TechIconProps) => {
 
     let techArray: string[] = [];
 
-    // ✅ handle string
+    // handle string
     if (typeof techStack === "string") {
         techArray = techStack.split(",").map((t) => t.trim());
     }
 
-    // ✅ handle array
     else if (Array.isArray(techStack)) {
         techArray = techStack;
     }
 
-    // ❌ fallback
+    // fallback
     else {
         techArray = [];
     }

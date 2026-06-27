@@ -3,9 +3,6 @@ import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
     try {
-        // ✅ ADD THIS LINE HERE
-        console.log("API KEY:", process.env.GOOGLE_GENERATIVE_AI_API_KEY);
-
         const { role, level, techstack, questionCount } = await req.json();
 
         const genAI = new GoogleGenerativeAI(
@@ -60,9 +57,7 @@ Example:
         const result = await model.generateContent(prompt);
         const text = result.response.text();
 
-        console.log("🔥 RAW TEXT:", text);
-
-        // 🔥 Clean response
+        // Clean response
         const cleaned = text
             .replace(/```json/g, "")
             .replace(/```/g, "")
@@ -87,7 +82,7 @@ Example:
             return NextResponse.json({ questions: [] });
         }
 
-        // ✅ Validate output
+        // Validate output
         if (!Array.isArray(questions) || questions.length === 0) {
             console.error("❌ Invalid questions:", questions);
             return NextResponse.json({ questions: [] });

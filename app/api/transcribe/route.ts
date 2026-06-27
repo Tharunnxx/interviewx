@@ -28,7 +28,6 @@ export async function POST(req: Request) {
         let text =
             data?.results?.channels?.[0]?.alternatives?.[0]?.transcript || "";
 
-        // 🔥 ULTRA POST-PROCESSING (FINAL LEVEL)
         text = text
             // JS frameworks
             .replace(/dot j s/gi, "Next.js")

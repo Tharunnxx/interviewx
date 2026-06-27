@@ -47,7 +47,7 @@ const Agent = ({
         };
     }, []);
 
-    // 🔊 SPEAK
+    // SPEAK
     const speak = async (text: string) => {
         if (!isActiveRef.current) return;
 
@@ -84,7 +84,7 @@ const Agent = ({
         });
     };
 
-    // 🎤 LISTEN (dynamic timer)
+    // LISTEN (dynamic timer)
     const listen = async (durationSec: number): Promise<string> => {
         if (!isActiveRef.current) return "";
 
@@ -132,14 +132,14 @@ const Agent = ({
         });
     };
 
-    // 🔥 FETCH QUESTIONS
+    // FETCH QUESTIONS
     const fetchQuestions = async () => {
         if (!interviewId) return [];
         const snap = await getDoc(doc(db, "interviews", interviewId));
         return snap.exists() ? snap.data().questions || [] : [];
     };
 
-    // 🟢 CREATE FLOW
+    // CREATE FLOW
     const startCreateFlow = async () => {
         try {
             isActiveRef.current = true;
@@ -163,7 +163,7 @@ const Agent = ({
                 setStep(i + 1);
                 await speak(setupQuestions[i]);
 
-                // ✅ 10 sec for create
+                // 10 sec for create
                 const ans = await listen(10);
                 answers.push(ans);
             }
@@ -202,7 +202,7 @@ const Agent = ({
                 questionCount = 5;
             }
 
-            // 🔥 API CALL
+            // API CALL
             const res = await fetch("/api/generate-questions", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -218,14 +218,14 @@ const Agent = ({
 
             console.log("🔥 API RESPONSE:", data);
 
-            // ❌ STRICT CHECK (NO FAKE QUESTIONS)
+            // STRICT CHECK (NO FAKE QUESTIONS)
             if (!Array.isArray(data.questions) || data.questions.length === 0) {
                 await speak("Failed to generate questions. Please try again.");
                 setCallStatus(CallStatus.FINISHED);
                 return;
             }
 
-            // ✅ SAVE TO FIREBASE (FIXED)
+            // SAVE TO FIREBASE (FIXED)
 
             const user = auth.currentUser;
 
@@ -236,7 +236,7 @@ const Agent = ({
             }
 
             await addDoc(collection(db, "interviews"), {
-                userId: user.uid, // ✅ IMPORTANT
+                userId: user.uid,
                 role,
                 level,
                 techstack: techstackRaw.split(",").map((t) => t.trim()),
@@ -256,7 +256,7 @@ const Agent = ({
         }
     };
 
-    // 🔵 INTERVIEW FLOW
+    // INTERVIEW FLOW
     const startInterview = async () => {
         isActiveRef.current = true;
         setCallStatus(CallStatus.ACTIVE);
@@ -278,7 +278,7 @@ const Agent = ({
             setStep(i + 1);
             await speak(questions[i]);
 
-            // ✅ 15 sec for interview
+            // 15 sec for interview
             const ans = await listen(15);
             answers.push(ans);
         }
