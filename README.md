@@ -20,12 +20,10 @@
 
 ## Live Demo
 
-Not yet deployed. Deployment to Vercel is planned; this section will be updated with a live link once available.
-
-| Resource | Status |
+| Resource | Link |
 |---|---|
-| Live Application | Pending deployment |
-| Repository | _Add repository URL_ |
+| Live Application | [interviewx-two.vercel.app](https://interviewx-two.vercel.app) |
+| Repository | [github.com/Tharunnxx/interviewx](https://github.com/Tharunnxx/interviewx) |
 
 ---
 
@@ -240,7 +238,7 @@ Dashboard Updated
 | AI | Google Gemini 2.5 Flash | Question generation, response evaluation, feedback generation |
 | Speech-to-Text | Deepgram API | Real-time transcription of candidate answers |
 | Text-to-Speech | TTS API | AI interviewer voice output |
-| Deployment | Vercel (planned) | — |
+| Deployment | Vercel | — |
 
 ---
 
